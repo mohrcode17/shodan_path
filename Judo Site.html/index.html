@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shodan Path — Judo Technique Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Antique&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0D0D0D;
+    --ink: #1A1A1A;
+    --paper: #F5F1E8;
+    --paper-dim: #E8E2D4;
+    --red: #C8102E;
+    --red-deep: #9E0C24;
+    --gold: #C9A227;
+    --gold-soft: #D9BA5A;
+    --gray: #8A8578;
+  }
+
+  .about-photo {
+  width: 300px;
+  border-radius: 10px;
+  display: block;
+  margin-top: 16px;
+}
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* ---------- Top navigation ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--black);
+    border-bottom: 3px solid var(--red);
+  }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 16px 0;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+  .brand .kanji {
+    font-family: 'Zen Antique', serif;
+    font-size: 28px;
+    color: var(--red);
+    line-height: 1;
+  }
+  .brand .name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 18px;
+    color: var(--paper);
+    text-transform: uppercase;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  nav button.navlink {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: none;
+    border: none;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  nav button.navlink:hover { color: var(--gold-soft); }
+  nav button.navlink.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ---------- Page sections ---------- */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  main { min-height: calc(100vh - 200px); }
+
+  /* ---------- HERO / HOME ---------- */
+  .hero {
+    background: var(--black);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 90px 24px 110px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero-kanji {
+    font-family: 'Zen Antique', serif;
+    font-size: clamp(120px, 22vw, 300px);
+    line-height: .8;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--gold);
+    text-stroke: 2px var(--gold);
+    opacity: .9;
+    justify-self: center;
+    user-select: none;
+  }
+  .hero h1 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(38px, 6vw, 68px);
+    line-height: 1.02;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .hero h1 .red { color: var(--red); display: block; }
+  .hero p.lede {
+    margin-top: 22px;
+    font-size: 18px;
+    max-width: 46ch;
+    color: var(--paper-dim);
+  }
+  .hero .cta-row { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding: 14px 26px;
+    border: 2px solid var(--red);
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .btn:hover { background: transparent; color: var(--red); }
+  .btn.ghost { background: transparent; border-color: var(--gold); color: var(--gold); }
+  .btn.ghost:hover { background: var(--gold); color: var(--black); }
+
+  /* ---------- Story strip ---------- */
+  .strip {
+    background: var(--red);
+    color: #fff;
+    text-align: center;
+    padding: 14px 24px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 72px 24px;
+  }
+  .section h2 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 32px;
+    margin-bottom: 6px;
+  }
+  .section h2 .jp {
+    font-family: 'Zen Antique', serif;
+    color: var(--red);
+    font-size: 24px;
+    margin-left: 10px;
+  }
+  .rule { width: 60px; height: 4px; background: var(--gold); margin: 14px 0 28px; }
+  .section p { font-size: 17px; margin-bottom: 18px; max-width: 68ch; }
+
+  /* ---------- Category grid on home ---------- */
+  .cat-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+  }
+  .cat-card {
+    background: var(--black);
+    color: var(--paper);
+    padding: 28px 24px;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    border-left: 4px solid var(--red);
+    transition: transform .15s, border-color .15s;
+  }
+  .cat-card:hover { transform: translateY(-4px); border-left-color: var(--gold); }
+  .cat-card .jp { font-family: 'Zen Antique', serif; font-size: 30px; color: var(--gold); }
+  .cat-card .en { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 17px; margin-top: 8px; }
+  .cat-card .cnt { color: var(--gray); font-size: 13px; margin-top: 6px; }
+
+  /* ---------- Category page ---------- */
+  .cat-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 54px 24px;
+    text-align: center;
+  }
+  .cat-header .jp { font-family: 'Zen Antique', serif; font-size: 46px; color: var(--gold); }
+  .cat-header .en { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; font-size: 26px; margin-top: 8px; }
+  .cat-header .desc { color: var(--paper-dim); margin-top: 10px; font-size: 15px; }
+
+  .tech-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 44px 24px 90px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .tech-card {
+    background: #fff;
+    border: 1px solid var(--paper-dim);
+    border-top: 4px solid var(--red);
+    padding: 22px;
+    cursor: pointer;
+    transition: box-shadow .15s, transform .15s;
+  }
+  .tech-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,.12); transform: translateY(-3px); }
+  .tech-card .jp { font-family: 'Zen Antique', serif; font-size: 22px; color: var(--ink); }
+  .tech-card .romaji { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 17px; margin-top: 6px; color: var(--red-deep); }
+  .tech-card .en { color: var(--gray); font-size: 14px; margin-top: 2px; }
+  .stars { margin-top: 12px; font-size: 15px; letter-spacing: 2px; }
+  .stars .on { color: var(--gold); }
+  .stars .off { color: var(--paper-dim); }
+
+  .empty-note {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px 80px;
+    color: var(--gray); font-style: italic;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-back {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(13,13,13,.72);
+    z-index: 200;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .modal-back.open { display: flex; align-items: flex-start; justify-content: center; }
+  .modal {
+    background: var(--paper);
+    max-width: 640px;
+    width: 100%;
+    margin: 40px auto;
+    border-top: 6px solid var(--red);
+  }
+  .modal-head { background: var(--black); color: var(--paper); padding: 28px 30px; position: relative; }
+  .modal-head .jp { font-family: 'Zen Antique', serif; font-size: 34px; color: var(--gold); }
+  .modal-head .romaji { font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 24px; margin-top: 4px; }
+  .modal-head .en { color: var(--paper-dim); margin-top: 2px; }
+  .modal-close {
+    position: absolute; top: 18px; right: 20px;
+    background: none; border: none; color: var(--paper);
+    font-size: 30px; cursor: pointer; line-height: 1;
+  }
+  .modal-close:hover { color: var(--red); }
+  .modal-body { padding: 28px 30px 34px; }
+  .modal-body .meta-row { display: flex; gap: 26px; flex-wrap: wrap; margin-bottom: 20px; }
+  .modal-body .meta-label { font-family:'Oswald',sans-serif; text-transform: uppercase; letter-spacing:1px; font-size:12px; color: var(--gray); }
+  .modal-body .meta-val { font-weight: 600; }
+  .modal-body h4 { font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:1px; font-size:14px; margin: 18px 0 8px; color: var(--red-deep); }
+  .modal-body p { font-size: 16px; }
+  .video-link {
+    display: inline-block; margin-top: 8px;
+    font-family:'Oswald',sans-serif; text-transform: uppercase; letter-spacing:1px; font-size:13px;
+    color: var(--black); background: var(--gold); padding: 10px 18px; text-decoration: none;
+  }
+  .video-link:hover { background: var(--gold-soft); }
+  .unverified { color: var(--gray); font-style: italic; font-size: 14px; }
+
+  footer {
+    background: var(--black); color: var(--gray);
+    text-align: center; padding: 30px 24px; font-size: 13px;
+  }
+  footer .kanji { font-family:'Zen Antique',serif; color: var(--red); font-size: 20px; }
+
+  @media (max-width: 720px) {
+    .hero-inner { grid-template-columns: 1fr; text-align: center; }
+    .hero-kanji { grid-row: 1; font-size: 140px; }
+    .hero .cta-row { justify-content: center; }
+    css
+.master-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 22px;
+  background: var(--black);
+  border: 2px solid var(--gray);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.master-btn:hover { border-color: var(--gold-soft); }
+.master-kanji {
+  font-family: 'Zen Antique', serif;
+  font-size: 26px;
+  color: var(--gray);
+  line-height: 1;
+  transition: color .2s ease;
+}
+.master-label {
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 13px;
+  color: var(--gray);
+  transition: color .2s ease;
+}
+/* the gold "mastered" state */
+.master-btn.mastered {
+  border-color: var(--gold);
+  background: var(--black);
+}
+.master-btn.mastered .master-kanji { color: var(--gold); }
+.master-btn.mastered .master-label { color: var(--gold); }
+}
+.master-kanji { font-family: 'Zen Antique', serif; font-size: 24px; color: var(--gray); }
+.master-label { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; color: var(--gray); }
+.master-btn.mastered { border-color: var(--gold); }
+.master-btn.mastered .master-kanji,
+.master-btn.mastered .master-label { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <button class="brand" data-nav="home">
+      <span class="kanji">柔道</span>
+      <span class="name">Shodan Path</span>
+    </button>
+    <nav>
+      <ul id="navlist"><!-- filled by JS --></ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main"><!-- pages injected by JS --></main>
+
+<!-- Technique detail modal -->
+<div class="modal-back" id="modalBack">
+  <div class="modal" id="modal"><!-- filled by JS --></div>
+</div>
+
+<footer>
+  <div class="kanji">柔道</div>
+  <p style="margin-top:8px;">Shodan Path — a study guide for the black belt grading syllabus.</p>
+  <p style="margin-top:4px;">Built by Brandon Mohr. Technique data compiled from verified judo sources.</p>
+</footer>
+
+<script>
+/* ============================================================
+   DATA MODEL
+   Each technique is an object. Categories group them.
+   NOTE: descriptions/difficulty/videos must be VERIFIED before
+   filling. Seeded here with a few well-established throws only.
+   ============================================================ */
+
+  const CATEGORIES = [
+  { id: "te",       jp: "手技",     romaji: "Te-waza",         en: "Hand Techniques",           desc: "Throws powered primarily by the arms and hands." },
+  { id: "koshi",    jp: "腰技",     romaji: "Koshi-waza",      en: "Hip Techniques",            desc: "Throws that load and rotate uke over the hips." },
+  { id: "ashi",     jp: "足技",     romaji: "Ashi-waza",       en: "Foot / Leg Techniques",     desc: "Throws driven by the feet and legs — sweeps, reaps, hooks." },
+  { id: "ma",       jp: "真捨身技", romaji: "Ma-sutemi-waza",  en: "Rear Sacrifice Techniques", desc: "Throws where tori sacrifices balance falling straight back." },
+  { id: "yoko",     jp: "横捨身技", romaji: "Yoko-sutemi-waza", en: "Side Sacrifice Techniques", desc: "Throws where tori sacrifices balance falling to the side." },
+  { id: "osaekomi", jp: "抑込技",   romaji: "Osaekomi-waza",   en: "Pinning Techniques",        desc: "Ground control holds that immobilize uke on their back." },
+  { id: "shime",    jp: "絞技",     romaji: "Shime-waza",      en: "Choking Techniques",        desc: "Submissions using the gi collar or arms to apply pressure to the neck." },
+  { id: "kansetsu", jp: "関節技",   romaji: "Kansetsu-waza",   en: "Joint Locks",               desc: "Submissions targeting joint leverage, primarily the elbow." }
+];
+
+  /* Seed data: a few verified, uncontroversial throws — one+ per category.
+     difficulty is a placeholder 1–5 for YOU to set from your own judgment.
+     description is a short starter you should verify/replace.
+     video is left null until you add a real, checked link. */
+  const TE_WAZA = [
+  {
+    cat: "te", jp: "背負投", romaji: "Seoi-nage", en: "Shoulder Throw",
+    difficulty: 3,
+    description: "Step under uke's center of gravity holding both lapels and load them over your back/shoulder to throw forward.",
+    video: "https://youtu.be/zIq0xI0ogxk?si=Vx27kJ-OxhgNhfid", verified: true
+  },
+  {
+    cat: "te", jp: "一本背負投", romaji: "Ippon-seoi-nage", en: "One-arm Shoulder Throw",
+    difficulty: 2,
+    description: "Clamp one of uke's arms deeply into your armpit, step in, and roll them over your shoulder.",
+    video: "https://youtu.be/FQnOlCxo4oI?si=GAXMzBtwh42TdhDE", verified: true
+  },
+  {
+    cat: "te", jp: "背負落", romaji: "Seoi-otoshi", en: "Shoulder Drop",
+    difficulty: 3,
+    description: "Similar to Seoi-nage, but dropping onto one or both knees to lower your center of gravity under uke before throwing.",
+    video: "https://youtu.be/vu1TMVNnq34?si=S1711nti83SEU-Wj", verified: true
+  },
+  {
+    cat: "te", jp: "体落", romaji: "Tai-otoshi", en: "Body Drop",
+    difficulty: 3,
+    description: "Pull uke off-balance forward while extending your leg across their shins to create a pivot wall, dropping your hips down.",
+    video: "https://youtu.be/4x6S3Q-Ktv8?si=Uf_MR2pPk9ZZLX2b", verified: true
+  },
+  {
+    cat: "te", jp: "肩車", romaji: "Kata-guruma", en: "Shoulder Wheel",
+    difficulty: 4,
+    description: "Duck low between uke's legs, drape them horizontally over your shoulders, and drop/dump them over.",
+    video: "https://youtu.be/cnHRhSy8yi4?si=vMfCuhtCdciwqhMr", verified: true
+  },
+  {
+    cat: "te", jp: "掬投", romaji: "Sukui-nage", en: "Scoop Throw",
+    difficulty: 2,
+    description: "Reach around or behind uke's thighs with both hands, lift upward like a scoop, and drive them backward.",
+    video: "https://youtu.be/vU6aJ2kFxoI?si=JcA6K2m5LPT56F3F", verified: true
+  },
+  {
+    cat: "te", jp: "帯落", romaji: "Obi-otoshi", en: "Belt Drop",
+    difficulty: 2,
+    description: "Reach around uke's waist to grab the back of their belt, pull them tightly onto your hip, and drop them down.",
+    video: "https://youtu.be/ff8U2TVZIYI?si=UlSyqq2zvLqXj3kG", verified: true
+  },
+  {
+    cat: "te", jp: "浮落", romaji: "Uki-otoshi", en: "Floating Drop",
+    difficulty: 5,
+    description: "Pull uke sharply downward in an arc using purely hand action as you drop to one knee.",
+    video: "https://youtu.be/6H5tmncOY4Q?si=YTTF5iXK0e49xdt_", verified: true
+  },
+  {
+    cat: "te", jp: "隅落", romaji: "Sumi-otoshi", en: "Corner Drop",
+    difficulty: 5,
+    description: "Unbalance uke to their rear corner and push/turn their upper body down without using leg sweeps.",
+    video: "https://youtu.be/lLU9wv52ni0?si=vvLb-oLIo0_kObxg", verified: true
+  },
+  {
+    cat: "te", jp: "山嵐", romaji: "Yama-arashi", en: "Mountain Storm",
+    difficulty: 4,
+    description: "Hold uke's lapel with a thumb-inside grip, sweep their leg with your calf/thigh while driving forward with hands.",
+    video: "https://youtu.be/MGlyKmSuzdc?si=DGr4YhFB5cEFFQQj", verified: true
+  },
+  {
+    cat: "te", jp: "帯取返", romaji: "Obi-tori-gaeshi", en: "Belt Grab Counter/Throw",
+    difficulty: 3,
+    description: "Reach over uke's shoulder to grab their belt from behind and use hand leverage to flip them over.",
+    video: "https://youtu.be/bpc82SrunUU?si=8GdVITt0DariO0F6", verified: true
+  },
+  {
+    cat: "te", jp: "双手刈", romaji: "Morote-gari", en: "Two-Hand Reap",
+    difficulty: 2,
+    description: "Grab behind both of uke's knees/thighs while driving forward with your shoulder to pull their legs out.",
+    video: "https://youtu.be/BHLQS4K85bs?si=bzkBBZfp8XQM81Ht", verified: true
+  },
+  {
+    cat: "te", jp: "朽木倒", romaji: "Kuchiki-taoshi", en: "One-Hand Tap",
+    difficulty: 2,
+    description: "Grab one of uke's ankles or lower legs from the outside and push their upper body backward.",
+    video: "https://youtu.be/ZNL47q1aJNY?si=_JrNMSdPh5GYACDy", verified: true
+  },
+  {
+    cat: "te", jp: "踵返", romaji: "Kibisu-gaeshi", en: "Heel Trip",
+    difficulty: 3,
+    description: "Reach down quickly to pick or scoop uke's single heel from the inside while driving them back.",
+    video: "https://youtu.be/tJylJYfBliA?si=qFF08oRL40msFriD", verified: true
+  },
+  {
+    cat: "te", jp: "内股すかし", romaji: "Uchi-mata-sukashi", en: "Inner Thigh Slip Counter",
+    difficulty: 5,
+    description: "Dodge uke's incoming Uchi-mata by twisting out of the way and snapping them down with your hands.",
+    video: "https://youtu.be/V-RS3uhtVWM?si=X9iTlK3qqPSMo4jY", verified: true
+  },
+  {
+    cat: "te", jp: "小内返", romaji: "Ko-uchi-gaeshi", en: "Minor Inner Reap Counter",
+    difficulty: 3,
+    description: "Counter uke's minor inner trip by twisting your torso and forcing them down with hand control.",
+    video: "https://youtu.be/_MWAdYi_LC4?si=AalthhkppQA1yf9T", verified: true
+  }
+];
+const KOSHI_WAZA = [
+  {
+    cat: "koshi", jp: "浮腰", romaji: "Uki-goshi", en: "Floating Hip Throw",
+    difficulty: 2,
+    description: "Wrap an arm around uke's waist, load them lightly across your hip, and twist quickly to throw them around you.",
+    video: "https://youtu.be/bPKwtB4lyOQ?si=IuFkJ7m7snLbLT_2", verified: true
+  },
+  {
+    cat: "koshi", jp: "大腰", romaji: "O-goshi", en: "Large Hip Throw",
+    difficulty: 1,
+    description: "Deeply encircle uke's back, pull them tight to your lower back/hips, bend your knees, and drive up and over.",
+    video: "https://youtu.be/yhu1mfy2vJ4?si=ZbvDfrTPOcBPGJIf", verified: true
+  },
+  {
+    cat: "koshi", jp: "腰車", romaji: "Koshi-guruma", en: "Hip Wheel",
+    difficulty: 2,
+    description: "Wrap your arm around uke's head/neck, pull them over your hip, and wheel them down to the mat.",
+    video: "https://youtu.be/SU7Id6uVJ44?si=8nV4MUXDO5Axa8Uk", verified: true
+  },
+  {
+    cat: "koshi", jp: "釣込腰", romaji: "Tsurikomi-goshi", en: "Lifting Pulling Hip Throw",
+    difficulty: 3,
+    description: "Drive your grip high up on uke's lapel to pull them forward and up onto your bent hips before snapping over.",
+    video: "https://youtu.be/McfzA0yRVt4?si=XR8UHnABe1IsH6KF", verified: true
+  },
+  {
+    cat: "koshi", jp: "袖釣込腰", romaji: "Sode-tsurikomi-goshi", en: "Sleeve Lifting Hip Throw",
+    difficulty: 4,
+    description: "Control both of uke's sleeves, raise one arm high like a frame, step in, and throw over the hips.",
+    video: "https://youtu.be/QsmAxpmYLOI?si=GdgmYeeqwBJmj3l1", verified: true
+  },
+  {
+    cat: "koshi", jp: "払腰", romaji: "Harai-goshi", en: "Sweeping Hip Throw",
+    difficulty: 3,
+    description: "Load uke onto your hip and sweep your outer thigh across the front of uke's thigh to wheel them over.",
+    video: "https://youtu.be/qTo8HlAAkOo?si=n0VId6Pf31a0ehrb", verified: true
+  },
+  {
+    cat: "koshi", jp: "釣腰", romaji: "Tsuri-goshi", en: "Lifting Hip Throw",
+    difficulty: 3,
+    description: "Grab uke's belt from behind, lift them off the floor onto your hips, and turn to throw them.",
+    video: "https://youtu.be/51Htlp7xEvE?si=JMgMxT0UVqwbU7D9", verified: true
+  },
+  {
+    cat: "koshi", jp: "跳腰", romaji: "Hane-goshi", en: "Spring Hip Throw",
+    difficulty: 4,
+    description: "Load uke on your side/hip and spring upward using a bent leg tucked against uke's inner thigh.",
+    video: "https://youtu.be/M9_7De6A1kk?si=nidIWHLjC199wvU-", verified: true
+  },
+  {
+    cat: "koshi", jp: "移腰", romaji: "Utsuri-goshi", en: "Switching Hip Throw",
+    difficulty: 4,
+    description: "Counter uke's attack by lifting them off the mat with your hips and switching hips mid-air to drop them.",
+    video: "https://youtu.be/4pQd_bEnlf0?si=C5COxli3pr3_pCr6", verified: true
+  },
+  {
+    cat: "koshi", jp: "後腰", romaji: "Ushiro-goshi", en: "Rear Hip Throw",
+    difficulty: 4,
+    description: "Counter uke from behind by wrapping their waist, lifting them straight up with your hips, and dropping them back.",
+    video: "Ushiro-goshi", verified: true
+  }
+];
+
+const ASHI_WAZA = [
+  {
+    cat: "ashi", jp: "出足払", romaji: "De-ashi-harai", en: "Advanced Foot Sweep",
+    difficulty: 2,
+    description: "Catch uke's advancing foot just before it places weight and sweep it sideways with the side of your foot.",
+    video: "https://youtu.be/4BUUvqxi_Kk?si=MmMQgZM57PpIfcnn", verified: true
+  },
+  {
+    cat: "ashi", jp: "膝車", romaji: "Hiza-guruma", en: "Knee Wheel",
+    difficulty: 2,
+    description: "Place the bottom of your foot against uke's outer knee joint as a blockage and wheel them over it with your arms.",
+    video: "https://youtu.be/JPJx9-oAVns?si=aP1f061cSeawSeep", verified: true
+  },
+  {
+    cat: "ashi", jp: "支釣込足", romaji: "Sasae-tsurikomi-ashi", en: "Propping Foot Throw",
+    difficulty: 2,
+    description: "Block uke's ankle/shin with the sole of your foot while pulling them in a circular upward motion over it.",
+    video: "https://youtu.be/699i--pvYmE?si=IVD5xme-BX3cJG7f", verified: true
+  },
+  {
+    cat: "ashi", jp: "大外刈", romaji: "O-soto-gari", en: "Major Outer Reap",
+    difficulty: 1,
+    description: "Step past uke's side, drive their weight onto one leg, and forcefully reap that leg from behind with your own leg.",
+    video: "https://youtu.be/c-A_nP7mKAc?si=ey-Wx6EO7UyYMOJg", verified: true
+  },
+  {
+    cat: "ashi", jp: "大内刈", romaji: "O-uchi-gari", en: "Major Inner Reap",
+    difficulty: 2,
+    description: "Step inside uke's stance and use your leg to reap their leg from the inside out in a hook motion.",
+    video: "https://youtu.be/0itJFhV9pDQ?si=6Mejo8BJrD2pDxvl", verified: true
+  },
+  {
+    cat: "ashi", jp: "小外刈", romaji: "Ko-soto-gari", en: "Minor Outer Reap",
+    difficulty: 2,
+    description: "Sweep uke's heel from behind with the sole of your foot as they step back.",
+    video: "https://youtu.be/jeQ541ScLB4?si=znMMjf9_Q-QGU1ea", verified: true
+  },
+  {
+    cat: "ashi", jp: "小内刈", romaji: "Ko-uchi-gari", en: "Minor Inner Reap",
+    difficulty: 2,
+    description: "Hook and reap uke's trailing heel from the inside using the bottom of your foot.",
+    video: "https://youtu.be/3Jb3tZvr9Ng?si=OYlwjkImBQtiVuf_", verified: true
+  },
+  {
+    cat: "ashi", jp: "送足払", romaji: "Okuri-ashi-harai", en: "Foot Sweep",
+    difficulty: 3,
+    description: "Sweep both of uke's feet together sideways across the mat as they move laterally.",
+    video: "https://youtu.be/nw1ZdRjrdRI?si=o1ILs_NFJUyNhY5u", verified: true
+  },
+  {
+    cat: "ashi", jp: "内股", romaji: "Uchi-mata", en: "Inner Thigh Throw",
+    difficulty: 4,
+    description: "Insert your leg deeply between uke's legs and sweep/kick upward against their inner thigh while pulling forward.",
+    video: "https://youtu.be/iUpSu5J-bgw?si=5dRrOUwfpJM1XZhx", verified: true
+  },
+  {
+    cat: "ashi", jp: "小外掛", romaji: "Ko-soto-gake", en: "Minor Outer Hook",
+    difficulty: 2,
+    description: "Wrap your leg around uke's leg from the outside, hooking behind their ankle, and push them backward over it.",
+    video: "https://youtu.be/8b6kY4s4zH4?si=lse2n1Rb7IvDBjRj", verified: true
+  },
+  {
+    cat: "ashi", jp: "足車", romaji: "Ashi-guruma", en: "Leg Wheel",
+    difficulty: 3,
+    description: "Extend your leg across uke's shins/knees (without touching the mat) and wheel them over it using strong upper-body pull.",
+    video: "https://youtu.be/ROeayhvom9U?si=In1o69rHHKfdikHQ", verified: true
+  },
+  {
+    cat: "ashi", jp: "払釣込足", romaji: "Harai-tsurikomi-ashi", en: "Lifting Pulling Foot Sweep",
+    difficulty: 4,
+    description: "Pull uke forward and upward while sweeping the front of their ankle with the bottom of your foot.",
+    video: "https://youtu.be/gGPXvWL8VbE?si=q5eWRy7k_Oxyna5N", verified: true
+  },
+  {
+    cat: "ashi", jp: "大車", romaji: "O-guruma", en: "Major Wheel",
+    difficulty: 4,
+    description: "Place your extended leg higher across uke's lower abdomen/thighs and pivot them over your leg.",
+    video: "https://youtu.be/SnZciTAY9vc?si=vTUGKNd4dkWe2_s4", verified: true
+  },
+  {
+    cat: "ashi", jp: "大外車", romaji: "O-soto-guruma", en: "Major Outer Wheel",
+    difficulty: 4,
+    description: "Extend your leg behind both of uke's legs, blocking them both, and wheel them backward over it.",
+    video: "https://youtu.be/92KbCm6pQeI?si=MtxLDOeLzz1vv-HO", verified: true
+  },
+  {
+    cat: "ashi", jp: "大外落", romaji: "O-soto-otoshi", en: "Major Outer Drop",
+    difficulty: 2,
+    description: "Put your leg behind uke's leg and chop down through their balance rather than sweeping up.",
+    video: "https://youtu.be/2DsVvDw7b8g?si=nSzWRGcFbc8MnXFW", verified: true
+  },
+  {
+    cat: "ashi", jp: "燕返", romaji: "Tsubame-gaeshi", en: "Swallow Counter",
+    difficulty: 4,
+    description: "Counter an incoming foot sweep by lifting your target foot over uke's sweeping foot and sweeping them back.",
+    video: "Tsubame-gaeshi", verified: true
+  },
+  {
+    cat: "ashi", jp: "大外返", romaji: "O-soto-gaeshi", en: "Major Outer Reap Counter",
+    difficulty: 3,
+    description: "Turn uke's O-soto-gari attempt against them by leaning into them and reaping their leg instead.",
+    video: "https://youtu.be/8ZjM3X_EANo?si=K-cY_TWNIeRto7_1", verified: true
+  },
+  {
+    cat: "ashi", jp: "大内返", romaji: "O-uchi-gaeshi", en: "Major Inner Reap Counter",
+    difficulty: 3,
+    description: "Counter uke's O-uchi-gari by turning your hips and twisting them into the mat as they attack.",
+    video: "https://youtu.be/dCyZTXyjIXE?si=YrG0RJmEC-yLy_fH", verified: true
+  },
+  {
+    cat: "ashi", jp: "跳腰返", romaji: "Hane-goshi-gaeshi", en: "Spring Hip Counter",
+    difficulty: 4,
+    description: "Sweep uke's supporting leg out from under them as they try to execute Hane-goshi.",
+    video: "https://youtu.be/9bZAZSBtnGs?si=cLSXN0ItYF6rMMbn", verified: true
+  },
+  {
+    cat: "ashi", jp: "払腰返", romaji: "Harai-goshi-gaeshi", en: "Sweeping Hip Counter",
+    difficulty: 4,
+    description: "Sweep uke's supporting leg as they try to execute Harai-goshi.",
+    video: "https://youtu.be/4U3It-7PPsc?si=nvGVHOQo9yBOg9TM", verified: true
+  },
+  {
+    cat: "ashi", jp: "内股返", romaji: "Uchi-mata-gaeshi", en: "Inner Thigh Counter",
+    difficulty: 4,
+    description: "Counter uke's Uchi-mata by leaning over them and reaping their supporting leg out.",
+    video: "https://youtu.be/Sy6sLWxkWYw?si=oXJLmrW4wRImwplJ", verified: true
+  }
+];
+
+const MA_WAZA = [
+  {
+    cat: "ma", jp: "巴投", romaji: "Tomoe-nage", en: "Circle Throw",
+    difficulty: 3,
+    description: "Fall backward onto your back, place the sole of your foot into uke's lower abdomen, and flip them over your head.",
+    video: "https://youtu.be/880WbHvHv6A?si=_8FoOqlNDxn-pFQv", verified: true
+  },
+  {
+    cat: "ma", jp: "隅返", romaji: "Sumi-gaeshi", en: "Corner Throw",
+    difficulty: 3,
+    description: "Drop straight back, place your instep behind uke's inner thigh, and lift them over your shoulder to the corner.",
+    video: "https://youtu.be/5VhduA5xkbA?si=c7g8rdHWesg3Q2Ez", verified: true
+  },
+  {
+    cat: "ma", jp: "引込返", romaji: "Hikikomi-gaeshi", en: "Pulling-Down Sacrifice",
+    difficulty: 3,
+    description: "Grab uke's belt over their shoulder, slide onto your back, and use an instep hook to flip them.",
+    video: "https://youtu.be/92zUYWBp5N8?si=EOPUiSRupVuHTxW9", verified: true
+  },
+  {
+    cat: "ma", jp: "俵返", romaji: "Tawara-gaeshi", en: "Rice Bale Throw",
+    difficulty: 4,
+    description: "Reach over uke's back as they shoot low, hug their chest/waist, fall backward, and throw them over your head.",
+    video: "https://youtu.be/TmTWgrmViZc?si=Zo1Ep1bOYeLVW0OT", verified: true
+  },
+  {
+    cat: "ma", jp: "裏投", romaji: "Ura-nage", en: "Rear Throw",
+    difficulty: 4,
+    description: "Wrap uke from behind, arch your back as you sacrifice your balance, and drive them over your shoulder onto their back.",
+    video: "https://youtu.be/Fgi9b8DJ5sQ?si=wE7kubHjmRy-9Ewr", verified: true
+  }
+];
+
+const YOKO_WAZA = [
+  {
+    cat: "yoko", jp: "横落", romaji: "Yoko-otoshi", en: "Side Drop",
+    difficulty: 3,
+    description: "Drop onto your side next to uke while extending one leg across their feet, sliding down to drag them over.",
+    video: "https://youtu.be/MnNG67pF_a0?si=KQIiKTUf2Yqh1WJV", verified: true
+  },
+  {
+    cat: "yoko", jp: "谷落", romaji: "Tani-otoshi", en: "Valley Drop",
+    difficulty: 2,
+    description: "Slide behind uke's heels onto your side while pulling their upper body backward over your extended leg.",
+    video: "https://youtu.be/3b9Me3Fohpk?si=9eK13j1ggwrYjC3Q", verified: true
+  },
+  {
+    cat: "yoko", jp: "跳巻込", romaji: "Hane-makikomi", en: "Springing Wrap-around",
+    difficulty: 3,
+    description: "Wrap uke's arm tightly against your chest, start a Hane-goshi motion, and roll with them onto the mat.",
+    video: "https://youtu.be/6CRBGLGz9j8?si=Ruxgwsqg3zL-G-6M", verified: true
+  },
+  {
+    cat: "yoko", jp: "外巻込", romaji: "Soto-makikomi", en: "Outer Wrap-around",
+    difficulty: 2,
+    description: "Wrap uke's arm across your body, dive your shoulder forward to the mat, and roll them over your back.",
+    video: "https://youtu.be/bWG9O1BVKtQ?si=rIaDLC-wYl9CEWN0", verified: true
+  },
+  {
+    cat: "yoko", jp: "内巻込", romaji: "Uchi-makikomi", en: "Inner Wrap-around",
+    difficulty: 3,
+    description: "Clamp uke's arm inside your armpit, turn, dive to the floor, and roll them over your torso.",
+    video: "https://youtu.be/5BowcjduxVc?si=T7Zmi3JCfDRRxqkQ", verified: true
+  },
+  {
+    cat: "yoko", jp: "横分", romaji: "Yoko-wakare", en: "Side Separation",
+    difficulty: 4,
+    description: "Drop sideways directly under uke's feet while pulling them forward over you in an arc.",
+    video: "https://youtu.be/bp1tscHlePI?si=_g7d57JB7C4o3Uob", verified: true
+  },
+  {
+    cat: "yoko", jp: "横車", romaji: "Yoko-guruma", en: "Side Wheel",
+    difficulty: 4,
+    description: "Counter an attack by diving your head between uke's legs onto your side and launching them over you in a wheeling motion.",
+    video: "https://youtu.be/MehP6I5cY2c?si=QYKW90rEbqsSKgEf", verified: true
+  },
+  {
+    cat: "yoko", jp: "払巻込", romaji: "Harai-makikomi", en: "Sweeping Wrap-around",
+    difficulty: 3,
+    description: "Initiate a Harai-goshi, wrap uke's arm/body tightly, and sacrifice your balance to roll over them.",
+    video: "https://youtu.be/VBaHzKaCXss?si=aVACqSJG3f-O3dUU", verified: true
+  },
+  {
+    cat: "yoko", jp: "横掛", romaji: "Yoko-gake", en: "Side Hook",
+    difficulty: 4,
+    description: "Hook uke's ankle with the side of your foot and drop onto your side, pulling them down directly with you.",
+    video: "https://youtu.be/tP1Sj1uDfSo?si=AsdUYFef7OFlGuTF", verified: true
+  },
+  {
+    cat: "yoko", jp: "抱分", romaji: "Daki-wakare", en: "High Lift and Side Divide",
+    difficulty: 4,
+    description: "Hug uke's torso from behind, fall sideways to the mat, and flip them over your body.",
+    video: "https://youtu.be/Hr0cOMGBDYo?si=6rWDtyVpT_kxrXIt", verified: true
+  },
+  {
+    cat: "yoko", jp: "蟹挟", romaji: "Kani-basami", en: "Scissor Throw",
+    difficulty: 3,
+    description: "Prohibited in competition. Jump sideways and clamp your legs around uke's body (one front, one back) to scissor them to the mat.",
+    video: "https://youtu.be/OR-HGHnarYc?si=d1ItsTwxcuO5uZmZ", verified: true
+  },
+  {
+    cat: "yoko", jp: "河津掛", romaji: "Kawazu-gake", en: "One-leg Entanglement",
+    difficulty: 3,
+    description: "Prohibited in competition. Entangle your leg around uke's leg from behind, falling backward together over that leg.",
+    video: "https://youtu.be/w6G57bWACi0?si=YgDW7HaagDzQVqiy", verified: true
+  },
+  {
+    cat: "yoko", jp: "内股巻込", romaji: "Uchi-mata-makikomi", en: "Inner Thigh Wrap-around",
+    difficulty: 3,
+    description: "Start an Uchi-mata entry, wrap uke's arm, and drive down, rolling over to complete the throw.",
+    video: "https://youtu.be/jZXENTLpJCI?si=Z1Zlqm2iAED8RVjq", verified: true
+  },
+  {
+    cat: "yoko", jp: "小内巻込", romaji: "Ko-uchi-makikomi", en: "Minor Inner Wrap-around",
+    difficulty: 3,
+    description: "Step inside uke's legs, hook their leg with yours, wrap their arm, and drop forward together.",
+    video: "https://youtu.be/_1eygIXLD_w?si=p42QxRYtO3ZThS7Q", verified: true
+  },
+  {
+    cat: "yoko", jp: "大外巻込", romaji: "O-soto-makikomi", en: "Major Outer Wrap-around",
+    difficulty: 3,
+    description: "Initiate O-soto-gari, wrap uke's arm/body, and drop forward to roll them down into the mat.",
+    video: "https://youtu.be/DGDv2oMwmas?si=U5zuK2qRKu2O_M3p", verified: true
+  },
+  {
+    cat: "yoko", jp: "浮技", romaji: "Uki-waza", en: "Floating Throw",
+    difficulty: 4,
+    description: "Pull uke forward onto their toes while diving onto your side, dragging them over your extended leg.",
+    video: "https://youtu.be/weVOpJ63gII?si=SzQe7t5U8ovZFVBp", verified: true
+  }
+];
+
+const OSAEKOMI_WAZA = [
+  {
+    cat: "osaekomi", jp: "袈裟固", romaji: "Kesa-gatame", en: "Scarf Hold",
+    difficulty: 1,
+    description: "Sit alongside uke's torso, hug their neck with one arm, clamp their near arm under your opposite armpit, and spread your legs for balance.",
+    video: "https://youtu.be/NDaQuJOFBYk?si=FTj20LlJLBWcyuLC", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "崩袈裟固", romaji: "Kuzure-kesa-gatame", en: "Broken Scarf Hold",
+    difficulty: 1,
+    description: "Similar to Kesa-gatame, but instead of hugging the neck, reach under uke's shoulder/armpit.",
+    video: "https://youtu.be/Q2fb9jaoUFQ?si=hOynClDdF09DDJ50", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "後袈裟固", romaji: "Ushiro-kesa-gatame", en: "Reverse Scarf Hold",
+    difficulty: 2,
+    description: "Sit facing toward uke's feet, pinning their shoulder with your side while trapping their arm.",
+    video: "https://youtu.be/SBapox2M2dE?si=IrMiRrfA6PKxPSna", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "肩固", romaji: "Kata-gatame", en: "Shoulder Hold",
+    difficulty: 2,
+    description: "Trapping uke's arm against their own neck, wrap your arms around their head/arm, press your weight down, and drive from your toes.",
+    video: "https://youtu.be/zQR3IOXxO_Q?si=pVfPnw9CN-4bkgVD", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "上四方固", romaji: "Kami-shiho-gatame", en: "Upper Four-Quarter Hold",
+    difficulty: 1,
+    description: "Position yourself above uke's head, reach under both of their shoulders to grab their belt, and chest-pin them down.",
+    video: "https://youtu.be/HFuMjOv0WN8?si=PiwG432atoPNykXq", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "崩上四方固", romaji: "Kuzure-kami-shiho-gatame", en: "Broken Upper Four-Quarter Hold",
+    difficulty: 2,
+    description: "Variant of Kami-shiho-gatame where one arm goes over a shoulder/arm instead of both under.",
+    video: "https://youtu.be/YUrogQWdwiY?si=oBqTDW9EcxzuuzIN", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "横四方固", romaji: "Yoko-shiho-gatame", en: "Side Four-Quarter Hold",
+    difficulty: 1,
+    description: "Lie perpendicular across uke's chest, control their neck with one hand and reach between their legs with the other to grip the belt/trousers.",
+    video: "https://youtu.be/TT7XJVSEQxA?si=kjL4s4ebjk-jc1vK", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "縦四方固", romaji: "Tate-shiho-gatame", en: "Straight Four-Quarter Hold",
+    difficulty: 2,
+    description: "Straddle uke's torso (mount position), wrap their neck/arm, and press your chest down flat.",
+    video: "https://youtu.be/55-rFmBx53g?si=97LMxQDMeQr96H17", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "浮固", romaji: "Uki-gatame", en: "Floating Hold",
+    difficulty: 3,
+    description: "Pin uke's chest while keeping one leg extended out to the side like a kickstand for flexible weight distribution.",
+    video: "https://youtu.be/e_lAjik1SUM?si=Tir8pt88z8b3RSR8", verified: true
+  },
+  {
+    cat: "osaekomi", jp: "裏固", romaji: "Ura-gatame", en: "Rear Hold",
+    difficulty: 3,
+    description: "Pin uke while lying on your back/side beneath or behind their upper torso, keeping control of their shoulders.",
+    video: "https://youtu.be/eeAHZB0v3XY?si=VTPoWUCbMmlqm7ii", verified: true
+  }
+];
+
+const SHIME_WAZA = [
+  {
+    cat: "shime", jp: "並十字絞", romaji: "Nami-juji-jime", en: "Normal Cross Choke",
+    difficulty: 2,
+    description: "Cross your hands on uke's lapels with thumbs inside, pulling inward and flaring wrists.",
+    video: "https://youtu.be/k2cHry9HByQ?si=I0-mHFXISdhEWr2A", verified: true
+  },
+  {
+    cat: "shime", jp: "逆十字絞", romaji: "Gyaku-juji-jime", en: "Reverse Cross Choke",
+    difficulty: 2,
+    description: "Cross hands on lapels with fingers inside (thumbs outside) and pull uke into your chest.",
+    video: "https://youtu.be/t3tQriIPdlI?si=OSgw1h1PJD9Fa4Ag", verified: true
+  },
+  {
+    cat: "shime", jp: "片十字絞", romaji: "Kata-juji-jime", en: "Half Cross Choke",
+    difficulty: 2,
+    description: "Cross hands with one thumb inside and one set of fingers inside, using a leverage pull.",
+    video: "https://youtu.be/3VZVUAmiMD8?si=BKblGRTBYOity7UN", verified: true
+  },
+  {
+    cat: "shime", jp: "裸絞", romaji: "Hadaka-jime", en: "Naked Choke",
+    difficulty: 1,
+    description: "Wrap your forearm directly around uke's throat from behind without using the gi collar, clamping your hands together.",
+    video: "https://youtu.be/9f0n8jez7iA?si=boBTQQuiH-s8Ob2M", verified: true
+  },
+  {
+    cat: "shime", jp: "送襟絞", romaji: "Okuri-eri-jime", en: "Sliding Collar Choke",
+    difficulty: 2,
+    description: "Reach over uke's shoulder from behind to grip the opposite collar while your other arm reaches under to control the second collar.",
+    video: "https://youtu.be/EiqyoVcIAi8?si=LR5RpyTAwRS0ozsb", verified: true
+  },
+  {
+    cat: "shime", jp: "片羽絞", romaji: "Kataha-jime", en: "Single Wing Choke",
+    difficulty: 3,
+    description: "Grab uke's collar from behind with one hand while trapping their opposite arm up behind their head with your other arm.",
+    video: "https://youtu.be/yaTGgRjnwB8?si=gPM30_wRdtBG85rO", verified: true
+  },
+  {
+    cat: "shime", jp: "片手絞", romaji: "Katate-jime", en: "One-Hand Choke",
+    difficulty: 3,
+    description: "Press the blade of one forearm straight across uke's trachea using leverage from the collar.",
+    video: "https://youtu.be/cHeIs-fSqwE?si=zZ3tFPX0MyPNhVX_", verified: true
+  },
+  {
+    cat: "shime", jp: "両手絞", romaji: "Ryote-jime", en: "Two-Hand Choke",
+    difficulty: 2,
+    description: "Grab both lapels with knuckles facing inward and squeeze the forearms straight across the throat.",
+    video: "https://youtu.be/-RHC4V7TQiY?si=-izlvOdMXVIcyd5_", verified: true
+  },
+  {
+    cat: "shime", jp: "袖車絞", romaji: "Sode-guruma-jime", en: "Sleeve Wheel Choke",
+    difficulty: 3,
+    description: "Reach around uke's neck, grab your own sleeve, and bring the other forearm across their throat like a scissor.",
+    video: "https://youtu.be/E3nvQzClcAU?si=g2fIzeRFMFGSQLKu", verified: true
+  },
+  {
+    cat: "shime", jp: "突込絞", romaji: "Tsukomi-jime", en: "Thrust Choke",
+    difficulty: 3,
+    description: "Grab uke's lapel with one hand and push your fist directly across/into their trachea.",
+    video: "https://youtu.be/dKKpnD3eLcY?si=kFAIQk77M7DPpc0z", verified: true
+  },
+  {
+    cat: "shime", jp: "三角絞", romaji: "Sankaku-jime", en: "Triangle Choke",
+    difficulty: 4,
+    description: "Entangle uke's neck and one arm inside your legs, locking your ankle behind your knee in a triangle configuration.",
+    video: "https://youtu.be/lq1CUBRAm7s?si=ec26Om4ielMd5g0T", verified: true
+  },
+  {
+    cat: "shime", jp: "胴絞", romaji: "Do-jime", en: "Trunk Lock",
+    difficulty: 1,
+    description: "Prohibited in competition. Wrap both legs around uke's stomach/ribcage from guard and squeeze forcefully to compress their torso.",
+    video: "https://youtu.be/D_0fFcoIbvY?si=XFmJ_ERFB1RHeTdO", verified: true
+  }
+];
+
+const KANSETSU_WAZA = [
+  {
+    cat: "kansetsu", jp: "腕緘", romaji: "Ude-garami", en: "Entangled Arm Lock",
+    difficulty: 2,
+    description: "Bend uke's elbow at a 90-degree angle, weave your arms through theirs to grab your own wrist, and twist the shoulder joint.",
+    video: "https://youtu.be/AIlTvZb4RlE?si=MnHivEVHdV3ZxRwO", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "十字挫", romaji: "Juji-gatame", en: "Cross Armlock",
+    difficulty: 2,
+    description: "Clamp uke's arm between your thighs, hold their wrist to your chest (thumb facing up), and lift your hips to hyperextend the elbow.",
+    video: "https://youtu.be/OWgSOlCuMXw?si=a6yJZhHTufs1gCi0", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "腕固", romaji: "Ude-gatame", en: "Arm Lock",
+    difficulty: 2,
+    description: "Apply pressure to the back of uke's straightened elbow joint using both hands or chest while trapping their wrist.",
+    video: "https://youtu.be/SBf0aTma1VI?si=QhfgVcVrx5iFnhFU", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "膝固", romaji: "Hiza-gatame", en: "Knee Lock on Arm",
+    difficulty: 3,
+    description: "Trap uke's wrist and use your knee or leg as a fulcrum against the back of their elbow joint.",
+    video: "https://youtu.be/H2HtAJdiJcE?si=VTiAASg0dbTXZs3U", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "脇固", romaji: "Waki-gatame", en: "Armpit Lock",
+    difficulty: 3,
+    description: "Clamp uke's arm straight under your armpit and lever the elbow backward over your wrist/forearm.",
+    video: "https://youtu.be/8F5p1zuJRG0?si=r1FI_w6_CoU-pqcC", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "腹固", romaji: "Hara-gatame", en: "Stomach Arm Lock",
+    difficulty: 3,
+    description: "Pull uke's straight arm across your lower stomach, using your abdomen as the fulcrum to pop the elbow.",
+    video: "https://youtu.be/ZzEycg8R_9M?si=AasCN_nCB8ML_aVs", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "足固", romaji: "Ashi-gatame", en: "Leg Arm Lock",
+    difficulty: 3,
+    description: "Use your leg wrapped over uke's arm as a fulcrum to hyperextend their elbow joint.",
+    video: "https://youtu.be/ClY7g_pX-4s?si=4HSbE5Hx5N0Bq9TE", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "手固", romaji: "Te-gatame", en: "Hand Lock",
+    difficulty: 3,
+    description: "Use your hand/forearm as a direct lever against uke's straight arm, often while controlling their wrist.",
+    video: "https://youtu.be/6DnvhY0tQVM?si=xBv9RCzh8AYds5a_", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "三角固", romaji: "Sankaku-gatame", en: "Triangle Arm Lock",
+    difficulty: 4,
+    description: "Trapping uke's head and arm inside a leg-triangle, hyperextend their trapped arm over your leg/hips.",
+    video: "https://youtu.be/WefAmW4azhk?si=ksKlGFfqo6WyXASG", verified: true
+  },
+  {
+    cat: "kansetsu", jp: "足緘", romaji: "Ashi-garami", en: "Leg Entanglement",
+    difficulty: 3,
+    description: "Prohibited in competition. Wrap your legs around uke's leg to apply direct hyperextending force to their knee joint.",
+    video: "https://youtu.be/BWWb0GoAtZw?si=SWWb5dHzY85ZG8Gd", verified: true
+  }
+];
+
+// Combine all into a single master array
+const TECHNIQUES = [
+  ...TE_WAZA,
+  ...KOSHI_WAZA,
+  ...ASHI_WAZA,
+  ...MA_WAZA,
+  ...YOKO_WAZA,
+  ...OSAEKOMI_WAZA,
+  ...SHIME_WAZA,
+  ...KANSETSU_WAZA
+];
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+
+  const main = document.getElementById('main');
+  const navlist = document.getElementById('navlist');
+
+  // Build nav
+  function buildNav() {
+    let html = `<li><button class="navlink" data-nav="home">Home</button></li>`;
+    CATEGORIES.forEach(c => {
+      html += `<li><button class="navlink" data-nav="cat:${c.id}">${c.romaji}</button></li>`;
+    });
+    html += `<li><button class="navlink" data-nav="about">About</button></li>`;
+    navlist.innerHTML = html;
+  }
+
+  function starHTML(n) {
+    let s = '';
+    for (let i = 1; i <= 5; i++) {
+      s += `<span class="${i <= n ? 'on' : 'off'}">★</span>`;
+    }
+    return `<span class="stars">${s}</span>`;
+  }
+
+  function homePage() {
+    const cats = CATEGORIES.map(c => {
+      const count = TECHNIQUES.filter(t => t.cat === c.id).length;
+      return `<button class="cat-card" data-nav="cat:${c.id}">
+        <div class="jp">${c.jp}</div>
+        <div class="en">${c.romaji}</div>
+        <div class="cnt">${c.en} · ${count} loaded</div>
+      </button>`;
+    }).join('');
+
+    return `
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <h1>The Road to<span class="red">Black Belt</span></h1>
+          <p class="lede">A clean, focused study guide to the judo throwing syllabus — organized the way the Kodokan classifies them, built for anyone working toward shodan.</p>
+          <div class="cta-row">
+            <button class="btn" data-nav="cat:te">Explore Techniques</button>
+            <button class="btn ghost" data-nav="about">About</button>
+          </div>
+        </div>
+        <div class="hero-kanji" aria-hidden="true">柔</div>
+      </div>
+    </section>
+    <div class="strip">柔よく剛を制す — Softness controls hardness</div>
+    <div class="cat-grid">${cats}</div>`;
+  }
+
+  function aboutPage() {
+    return `
+    <div class="cat-header">
+      <div class="jp">道</div>
+      <div class="en">The Path</div>
+    </div>
+    <section class="section">
+      <h2>The Story <span class="jp">物語</span></h2>
+      <div class="rule"></div>
+      <p>Judo — the "gentle way" — was founded by Jigoro Kano in 1882. Its throwing techniques, the <em>nage-waza</em>, are traditionally organized into groups by how the throw is powered: by the hands, the hips, the legs, or by sacrificing one's own balance.</p>
+      <p>This guide organizes the grading syllabus into those five categories so you can study one family of throws at a time on the road to your black belt, as well as some pins and submissions.</p>
+
+      <h2 style="margin-top:48px;">About Me <span class="jp">私について</span></h2>
+      <div class="rule"></div>
+      <img src="judo.jpeg" alt="Brandon Mohr" class="about-photo">
+      <p>Welcome to Shodan Path!
+
+My name is Brandon "Tsuyoshi" Mohr. I am a Computer Science student at Temple University Japan and a passionate Judoka.
+
+My Judo journey began at Kyushu University, where I joined the Judo club and competed in the prestigious Nanadaisen Tournament. Starting completely new to Judo, I relied on raw strength and a wrestling background. I quickly learned that brute force is not enough against refined technique.
+
+That experience inspired me to build this site. By combining my Computer Science background with my love for Judo, I created this interactive dictionary to help practitioners study throws, understand grappling mechanics, and master technique.
+
+My personal goal is to reach black belt, and I created this resource to support anyone sharing that same dream.</p>
+    </section>`;
+  }
+
+  function categoryPage(catId) {
+    const c = CATEGORIES.find(x => x.id === catId);
+    const techs = TECHNIQUES.filter(t => t.cat === catId);
+    const cards = techs.map((t, i) => `
+      <button class="tech-card" data-tech="${catId}:${i}">
+        <div class="jp">${t.jp}</div>
+        <div class="romaji">${t.romaji}</div>
+        <div class="en">${t.en}</div>
+        ${starHTML(t.difficulty)}
+      </button>`).join('');
+
+    return `
+    <div class="cat-header">
+      <div class="jp">${c.jp}</div>
+      <div class="en">${c.romaji}</div>
+      <div class="desc">${c.desc}</div>
+    </div>
+    ${techs.length
+      ? `<div class="tech-grid">${cards}</div>`
+      : `<p class="empty-note">No techniques loaded in this category yet.</p>`}`;
+  }
+function getMastered() {
+  const saved = localStorage.getItem("masteredTechniques");
+  return saved ? JSON.parse(saved) : [];
+}
+function toggleMastered(id) {
+  let list = getMastered();
+  if (list.includes(id)) {
+    list = list.filter(x => x !== id);
+  } else {
+    list.push(id);
+  }
+  localStorage.setItem("masteredTechniques", JSON.stringify(list));
+}
+  function openModal(catId, idx) {
+    const t = TECHNIQUES.filter(x => x.cat === catId)[idx];
+    const c = CATEGORIES.find(x => x.id === catId);
+    const modal = document.getElementById('modal');
+    const id = t.romaji;
+    const isMastered = getMastered().includes(id);
+    modal.innerHTML = `
+      <div class="modal-head">
+        <button class="modal-close" aria-label="Close">×</button>
+        <div class="jp">${t.jp}</div>
+        <div class="romaji">${t.romaji}</div>
+        <div class="en">${t.en}</div>
+      </div>
+      <div class="modal-body">
+        <div class="meta-row">
+          <div><div class="meta-label">Category</div><div class="meta-val">${c.romaji}</div></div>
+          <div><div class="meta-label">Difficulty</div><div class="meta-val">${starHTML(t.difficulty)}</div></div>
+        </div>
+        <button class="master-btn ${isMastered ? 'mastered' : ''}" data-master="${id}">
+  <span class="master-kanji">極</span>
+  <span class="master-label">${isMastered ? 'Mastered' : 'Mark as mastered'}</span>
+</button>
+        <h4>How it works</h4>
+        <p>${t.description}</p>
+        ${t.verified ? '' : '<p class="unverified">⚠ Draft description — verify against your official syllabus before relying on it.</p>'}
+        <h4>Video</h4>
+        ${t.video
+          ? `<a class="video-link" href="${t.video}" target="_blank" rel="noopener">Watch demonstration →</a>`
+          : `<p class="unverified">No verified video link added yet.</p>`}
+      </div>`;
+    document.getElementById('modalBack').classList.add('open');
+    modal.querySelector('.modal-close').addEventListener('click', closeModal);
+  }
+  function closeModal() {
+    document.getElementById('modalBack').classList.remove('open');
+  }
+
+  /* ---------- Router ---------- */
+  function go(route) {
+    let html = '';
+    if (route === 'home') html = homePage();
+    else if (route === 'about') html = aboutPage();
+    else if (route.startsWith('cat:')) html = categoryPage(route.split(':')[1]);
+    main.innerHTML = html;
+
+    // active nav state
+    document.querySelectorAll('.navlink').forEach(b => {
+      b.classList.toggle('active', b.dataset.nav === route);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Event delegation ---------- */
+ document.addEventListener('click', (e) => {
+    const nav = e.target.closest('[data-nav]');
+    if (nav) { go(nav.dataset.nav); return; }
+    const tech = e.target.closest('[data-tech]');
+    if (tech) {
+      const [catId, idx] = tech.dataset.tech.split(':');
+      openModal(catId, parseInt(idx, 10));
+      return;
+    }
+    const master = e.target.closest('[data-master]');
+    if (master) {
+      toggleMastered(master.dataset.master);
+      const nowMastered = getMastered().includes(master.dataset.master);
+      master.classList.toggle('mastered', nowMastered);
+      master.querySelector('.master-label').textContent = nowMastered ? 'Mastered' : 'Mark as mastered';
+      return;
+    }
+  });
+  document.getElementById('modalBack').addEventListener('click', (e) => {
+    if (e.target.id === 'modalBack') closeModal();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  // init
+  buildNav();
+  go('home');
+</script>
+</body>
+</html>
